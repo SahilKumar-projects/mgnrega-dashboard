@@ -8,7 +8,7 @@ import GeminiChat from "./components/GeminiChat";
 function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [showCharts, setShowCharts] = useState(false);
-  const [showAI, setShowAI] = useState(false); // 🔑 AI MODAL STATE
+  const [showAI, setShowAI] = useState(false);
 
   const [states, setStates] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -23,12 +23,15 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
+  const API_BASE = import.meta.env.VITE_API_URL;
+
   /* ---------- LOAD STATES ---------- */
   useEffect(() => {
-    fetch("http://localhost:5000/api/states")
+    fetch(`${API_BASE}/api/states`)
       .then((res) => res.json())
-      .then(setStates);
-  }, []);
+      .then(setStates)
+      .catch(() => setError("Failed to load states"));
+  }, [API_BASE]);
 
   /* ---------- LOAD DISTRICTS ---------- */
   useEffect(() => {
@@ -36,10 +39,12 @@ function App() {
       setDistricts([]);
       return;
     }
-    fetch(`http://localhost:5000/api/districts?state=${stateName}`)
+
+    fetch(`${API_BASE}/api/districts?state=${encodeURIComponent(stateName)}`)
       .then((res) => res.json())
-      .then(setDistricts);
-  }, [stateName]);
+      .then(setDistricts)
+      .catch(() => setError("Failed to load districts"));
+  }, [stateName, API_BASE]);
 
   /* ---------- SEARCH ---------- */
   const handleSearch = (e) => {
@@ -55,14 +60,15 @@ function App() {
     setShowCharts(false);
     setShowAI(false);
 
-    let url = "http://localhost:5000/api/data?";
+    let url = `${API_BASE}/api/data?`;
     if (stateName) url += `state=${encodeURIComponent(stateName)}&`;
     if (districtName) url += `district=${encodeURIComponent(districtName)}&`;
     url += `sortOrder=${sortOrder}`;
 
     fetch(url)
       .then((res) => res.json())
-      .then(setData);
+      .then(setData)
+      .catch(() => setError("Failed to fetch data"));
   };
 
   /* ---------- RESET ---------- */
@@ -276,11 +282,17 @@ function App() {
             </div>
 
             <div className="pagination">
-              <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+              >
                 Previous
               </button>
               <span>Page {currentPage} of {totalPages}</span>
-              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(currentPage + 1)}
+              >
                 Next
               </button>
             </div>

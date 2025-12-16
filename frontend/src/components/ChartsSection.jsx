@@ -114,7 +114,7 @@ function ChartsSection({ data }) {
 
       <Bar
         dataKey="value"
-        barSize={60}   // 🔑 MAKES BAR THICK & VISIBLE
+        barSize={60}  
         radius={[6, 6, 0, 0]}
       >
         {chartData.map((_, i) => (

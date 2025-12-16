@@ -22,26 +22,34 @@ function GeminiChat({ summaryData, onClose }) {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/ai/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          summaryData,
-          question: userMessage.text,
-        }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/ai/ask`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            summaryData,
+            question: userMessage.text,
+          }),
+        }
+      );
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "AI failed");
 
-      // Replace "Thinking..." with actual answer
+      if (!res.ok) {
+        throw new Error(data.error || "AI request failed");
+      }
+
+      // Replace "Thinking..." message with actual AI response
       setMessages((prev) => [
         ...prev.slice(0, -1),
         { role: "ai", text: data.answer },
       ]);
     } catch (err) {
       setMessages((prev) => prev.slice(0, -1));
-      setError(err.message);
+      setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -53,7 +61,9 @@ function GeminiChat({ summaryData, onClose }) {
         {/* HEADER */}
         <div className="ai-header">
           <h3>🤖 Ask AI (MGNREGA Insights)</h3>
-          <button className="ai-close" onClick={onClose}>✖</button>
+          <button className="ai-close" onClick={onClose}>
+            ✖
+          </button>
         </div>
 
         {/* CHAT BODY */}
@@ -71,6 +81,7 @@ function GeminiChat({ summaryData, onClose }) {
           ))}
         </div>
 
+        {/* ERROR */}
         {error && <div className="ai-error">{error}</div>}
 
         {/* INPUT */}
