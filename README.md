@@ -1,6 +1,9 @@
 # MGNREGA Analytics Dashboard with AI-Powered Insights  
 *(Mahatma Gandhi National Rural Employment Guarantee Act)*
 
+## Live Demo
+  https://mgnrega-dashboard-two.vercel.app
+
 ##  Overview
 The **MGNREGA Analytics Dashboard** is a full-stack, data-driven web application designed to analyze and visualize district-wise employment data under the **Mahatma Gandhi National Rural Employment Guarantee Act (MGNREGA)**.  
 
